@@ -20,7 +20,7 @@ A minimal Alpine-based Docker image for updating a cloned git repository with va
 - `REMOTE_NAME`: Remote name to fetch from (default: `origin`)
 - `BRANCH`: Branch name to update (default: current branch)
 - `STRATEGY`: Update strategy (default: `ff-only`)
-  - `ff-only`: Fast-forward only merge
+  - `ff-only`: Fast-forward only merge (resets local changes if present)
   - `rebase`: Rebase on remote branch
   - `hard`: Hard reset to remote branch
   - `stash`: Stash local changes, merge, and pop stash
