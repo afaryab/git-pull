@@ -154,6 +154,13 @@ print_info "Applying strategy: $STRATEGY"
 
 case "$STRATEGY" in
     ff-only)
+        # Check if there are local changes and reset them
+        if ! git diff-index --quiet HEAD --; then
+            print_warn "Local changes detected, resetting before merge"
+            print_command "git reset --hard HEAD"
+            git reset --hard HEAD
+        fi
+        
         print_command "git merge --ff-only $REMOTE_NAME/$BRANCH"
         git merge --ff-only "$REMOTE_NAME/$BRANCH"
         ;;
