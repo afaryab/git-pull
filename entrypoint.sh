@@ -63,6 +63,23 @@ fi
 
 print_info "Working in repository: $REPO_DIR"
 
+# Fallback: handle "dubious ownership" errors.
+# When the repo is a mounted volume owned by a different UID than the container
+# user, git refuses to operate on it ("detected dubious ownership in repository").
+# Mark the directory as safe so the git commands below can proceed.
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    print_warn "Git reported dubious ownership for $REPO_DIR, adding safe.directory exception"
+    print_command "git config --global --add safe.directory $REPO_DIR"
+    git config --global --add safe.directory "$REPO_DIR"
+
+    # Re-validate after applying the exception
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        print_error "Cannot access git repository at $REPO_DIR even after adding safe.directory exception"
+        exit 1
+    fi
+    print_info "safe.directory exception applied"
+fi
+
 # Setup SSH authentication if private key is provided
 if [ -n "$SSH_PRIVATE_KEY_FILE" ]; then
     print_info "Setting up SSH authentication"
